@@ -10,7 +10,7 @@ namespace Backend.Features.Users;
 
 [ApiController]
 [Route("api/users")]
-[Authorize(Roles = "manager")]
+// [Authorize(Roles = "manager")]
 [Consumes(MediaTypeNames.Application.Json)]
 [Produces(MediaTypeNames.Application.Json)]
 public class UsersController : ControllerBase
@@ -64,12 +64,12 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UserView>> Post([FromBody]UserRequest request)
     {
-        var newUser = new User { Email = request.Email };
+        var newUser = new User {UserName = "user", Email = request.Email };
 
         var result = await _userManager.CreateAsync(newUser, request.Password);
         if (!result.Succeeded)
         {
-            return BadRequest();
+            return BadRequest(result.Errors);
         }
 
         var role = await _roleManager.FindByIdAsync(request.RoleId);
@@ -105,10 +105,13 @@ public class UsersController : ControllerBase
             return NotFound("User not found");
         }
 
+        var roles = await _userManager.GetRolesAsync(user);
+        await _userManager.RemoveFromRolesAsync(user, roles);
+
         var result = await _userManager.DeleteAsync(user);
         if (!result.Succeeded)
         {
-            return Ok(StatusCodes.Status409Conflict);
+            return BadRequest(result.Errors);
         }
 
         return Ok(new UserView

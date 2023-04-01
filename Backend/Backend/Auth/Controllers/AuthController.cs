@@ -30,13 +30,13 @@ public class AuthController : ControllerBase
         var user = await _userManager.FindByEmailAsync(request.Email);
         if (user is null)
         {
-            return Unauthorized();
+            return Unauthorized("Email not found");
         }
         
         var wrongPass = !await _userManager.CheckPasswordAsync(user, request.Password);
         if (wrongPass)
         {
-            return Unauthorized();
+            return Unauthorized("Password not found");
         }
 
         var userRoles = await _userManager.GetRolesAsync(user);
@@ -51,11 +51,11 @@ public class AuthController : ControllerBase
         
         authClaims.AddRange(userRoles.Select(role => new Claim("role", role)));
         
-        var authSigninKey =  new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt : Secret"]));
+        var authSigninKey =  new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
 
         var token = new JwtSecurityToken(
-            _configuration["Jwt : Issuer"],
-            _configuration["Jwt : Audience"],
+            _configuration["Jwt:Issuer"],
+            _configuration["Jwt:Audience"],
             expires: DateTime.UtcNow.AddMinutes(10),
             claims: authClaims,
             signingCredentials: new SigningCredentials(authSigninKey, SecurityAlgorithms.HmacSha256)

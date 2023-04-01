@@ -1,9 +1,9 @@
-using Backend.Base.Models;
+namespace Backend.Features.OldEmployees.Views;
 
-namespace Backend.Features.OldEmployee;
-
-public class OldEmployee : Model
+public class OldEmployeeResponse
 {
+    public string Id { get; set; } = string.Empty;
+    
     public string UserId { get; set; } = string.Empty;
     
     public string Name { get; set; } = string.Empty;

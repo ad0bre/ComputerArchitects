@@ -1,16 +1,16 @@
-namespace Backend.Features.NewEmployee.Views;
+using Backend.Base.Models;
 
-public class NewEmployeeResponse
+namespace Backend.Features.NewEmployees;
+
+public class NewEmployee : Model
 {
-    public string Id { get; set; } = string.Empty;
-    
     public string UserId { get; set; } = string.Empty;
     
     public string Name { get; set; } = string.Empty;
-    
-    public string Email { get; set; } = string.Empty;
 
     public string Bio { get; set; } = string.Empty;
+    
+    public string Email { get; set; } = string.Empty;
     
     public string Position { get; set; } = string.Empty;
 

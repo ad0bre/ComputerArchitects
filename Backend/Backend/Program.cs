@@ -41,15 +41,17 @@ builder.Services
     })
     .AddJwtBearer(options =>
     {
+        //options.Authority = "http://localhost:5140";
+        options.RequireHttpsMetadata = false;
         options.SaveToken = true;
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
+            //ValidateIssuer = true,
+            //ValidateAudience = true,
             ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidAudience = builder.Configuration["Jwt : Audience"],
-            ValidIssuer = builder.Configuration["Jwt : Issuer"],
+            //ValidateIssuerSigningKey = true,
+            //ValidAudience = builder.Configuration["Jwt : Audience"],
+            //ValidIssuer = builder.Configuration["Jwt : Issuer"],
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
             )

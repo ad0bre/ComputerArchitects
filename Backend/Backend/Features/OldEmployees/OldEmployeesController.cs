@@ -2,14 +2,12 @@ using System.Net.Mime;
 using Backend.Auth.Users;
 using Backend.Database;
 using Backend.Features.Employees;
-using Backend.Features.OldEmployee.Views;
-using Backend.Utils.AdminRoute;
-using Microsoft.AspNetCore.Authorization;
+using Backend.Features.OldEmployees.Views;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Backend.Features.OldEmployee;
+namespace Backend.Features.OldEmployees;
 
 [ApiController]
 [Route("api/oldemployees")]

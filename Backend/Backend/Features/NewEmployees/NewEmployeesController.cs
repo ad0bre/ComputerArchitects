@@ -2,14 +2,14 @@ using System.Net.Mime;
 using Backend.Auth.Users;
 using Backend.Database;
 using Backend.Features.Employees;
-using Backend.Features.NewEmployee.Views;
-using Backend.Utils.AdminRoute;
-using Microsoft.AspNetCore.Authorization;
+using Backend.Features.FormResponses;
+using Backend.Features.NewEmployees.Views;
+using Backend.Features.OldEmployees;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Backend.Features.NewEmployee;
+namespace Backend.Features.NewEmployees;
 
 [ApiController]
 [Route("api/newemployees")]
@@ -202,5 +202,60 @@ public class NewEmployeesController : ControllerBase
             StartedWorking = result.Entity.StartedWorking,
             BuddyId = result.Entity.BuddyId
         });
+    }
+    
+    [HttpPatch("assignbuddy")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<string>> AssignBuddy([FromBody] string id)
+    {
+        var newEmployees = _dbContext.Set<NewEmployee>();
+        var oldEmployees = _dbContext.Set<OldEmployee>();
+        var responses = _dbContext.Set<FormResponse>();
+
+        var newEmployee = await newEmployees.FirstOrDefaultAsync(e => e.Id == id);
+        if (newEmployee is null)
+        {
+            return NotFound("New employee not found");
+        }
+        
+        OldEmployee bestMatch = null;
+        var maxCommon = -1;
+        
+        var newEmployeeTechnologies = await responses
+            .Where(r => r.UserId == newEmployee.UserId)
+            .Select(r => r.Value)
+            .ToListAsync();
+        
+        foreach (var oldEmployee in oldEmployees)
+        {
+            var oldEmployeeTechnologies = await responses
+                .Where(r => r.UserId == oldEmployee.UserId)
+                .Select(r => r.Value)
+                .ToListAsync();
+            
+            var commonCount = newEmployeeTechnologies.Intersect(oldEmployeeTechnologies).Count();
+            
+            if (commonCount > maxCommon)
+            {
+                maxCommon = commonCount;
+                bestMatch = oldEmployee;
+            }
+        }
+
+        if (bestMatch is null)
+        {
+            return NotFound("Could not find a workplace buddy");
+        }
+        
+        newEmployee.BuddyId = bestMatch.Id;
+        var result = newEmployees.Update(newEmployee);
+        if (result.State is not EntityState.Modified)
+        {
+            return BadRequest("Could not update new employee model");
+        }
+        await _dbContext.SaveChangesAsync();
+        return Ok(newEmployee.BuddyId);
     }
 }

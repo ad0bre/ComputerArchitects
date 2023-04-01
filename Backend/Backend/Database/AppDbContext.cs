@@ -1,7 +1,7 @@
 using Backend.Auth.Users;
 using Backend.Features.FormResponses;
-using Backend.Features.NewEmployee;
-using Backend.Features.OldEmployee;
+using Backend.Features.NewEmployees;
+using Backend.Features.OldEmployees;
 using Backend.Features.QuestionOptions;
 using Backend.Features.Questions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;

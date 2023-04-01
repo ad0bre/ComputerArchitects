@@ -16,13 +16,10 @@ public class AuthController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private readonly UserManager<User> _userManager;
-    private readonly RoleManager<Role> _roleManager;
-
-    public AuthController(IConfiguration configuration, UserManager<User> userManager, RoleManager<Role> roleManager)
+    public AuthController(IConfiguration configuration, UserManager<User> userManager)  
     {
         _configuration = configuration;
         _userManager = userManager;
-        _roleManager = roleManager;
     }
 
     [HttpPost]
@@ -58,7 +55,7 @@ public class AuthController : ControllerBase
 
         var token = new JwtSecurityToken(
             _configuration["Jwt : Issuer"],
-            _configuration["Jwt : Audicene"],
+            _configuration["Jwt : Audience"],
             expires: DateTime.UtcNow.AddMinutes(10),
             claims: authClaims,
             signingCredentials: new SigningCredentials(authSigninKey, SecurityAlgorithms.HmacSha256)

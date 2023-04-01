@@ -3,6 +3,7 @@ using Backend.Auth.Users;
 using Backend.Database;
 using Backend.Features.Employees;
 using Backend.Features.OldEmployee.Views;
+using Backend.Utils.AdminRoute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +29,7 @@ public class OldEmployeesController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "manager")]
+    [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -111,6 +112,7 @@ public class OldEmployeesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<OldEmployeeResponse>> Delete([FromRoute] string id)
@@ -138,7 +140,7 @@ public class OldEmployeesController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    [Authorize(Roles = "manager")]
+    [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<OldEmployeeResponse>> Update([FromRoute] string id, [FromBody] EmployeeRequest request)

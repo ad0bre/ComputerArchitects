@@ -1,6 +1,7 @@
 using System.Net.Mime;
 using Backend.Auth.Users;
 using Backend.Features.Users.Views;
+using Backend.Utils.AdminRoute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -73,7 +74,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "manager")]
+    [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UserView>> Post([FromBody]UserRequest request)
@@ -109,7 +110,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "manager")]
+    [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UserView>> Delete([FromRoute] string id)
@@ -138,7 +139,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPatch("role/{id}")]
-    [Authorize(Roles = "manager")]
+    [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

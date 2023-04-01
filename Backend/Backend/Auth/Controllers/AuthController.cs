@@ -49,7 +49,7 @@ public class AuthController : ControllerBase
             new("email", user.Email)
         };
         
-        authClaims.AddRange(userRoles.Select(role => new Claim("role", role)));
+        authClaims.AddRange(userRoles.Select(role => new Claim("roles", role)));
         
         var authSigninKey =  new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
 

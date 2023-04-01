@@ -3,6 +3,7 @@ using Backend.Auth.Users;
 using Backend.Database;
 using Backend.Features.Employees;
 using Backend.Features.NewEmployee.Views;
+using Backend.Utils.AdminRoute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ public class NewEmployeesController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "manager")]
+    [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -86,7 +87,7 @@ public class NewEmployeesController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<NewEmployeeResponse>> GetbyId([FromRoute] string id)
+    public async Task<ActionResult<NewEmployeeResponse>> Get([FromRoute] string id)
     {
         var newEmployee = await _dbContext.NewEmployees.FirstOrDefaultAsync(e => e.Id == id);
         if (newEmployee is null)
@@ -108,6 +109,7 @@ public class NewEmployeesController : ControllerBase
     }
     
     [HttpDelete("{id}")]
+    [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<NewEmployeeResponse>> Delete([FromRoute] string id)
@@ -135,7 +137,7 @@ public class NewEmployeesController : ControllerBase
     }
     
     [HttpPatch("{id}")]
-    [Authorize(Roles = "manager")]
+    [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<NewEmployeeResponse>> Update([FromRoute] string id, [FromBody] EmployeeRequest request)

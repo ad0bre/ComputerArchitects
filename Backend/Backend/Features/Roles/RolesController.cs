@@ -1,6 +1,7 @@
 using System.Net.Mime;
 using Backend.Auth.Users;
 using Backend.Features.Roles.Views;
+using Backend.Utils.AdminRoute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -53,7 +54,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "manager")]
+    [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -75,7 +76,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "manager")]
+    [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<RoleView>> Post([FromBody] RoleView request)

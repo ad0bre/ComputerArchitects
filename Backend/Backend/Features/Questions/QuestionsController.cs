@@ -1,6 +1,7 @@
 using System.Net.Mime;
 using Backend.Database;
 using Backend.Features.Questions.Views;
+using Backend.Utils.AdminRoute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,7 @@ public class QuestionsController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "manager")]
+    [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<QuestionResponse>> Post([FromBody] QuestionRequest request)
     {
@@ -87,7 +88,7 @@ public class QuestionsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "manager")]
+    [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<QuestionResponse>> Delete([FromRoute] string id)
@@ -112,7 +113,7 @@ public class QuestionsController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    [Authorize(Roles = "manager")]
+    [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<QuestionResponse>> Update([FromRoute] string id, [FromBody] QuestionRequest request)

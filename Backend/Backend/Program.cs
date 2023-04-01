@@ -11,11 +11,12 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Default");
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
-builder.Services.AddCors(options => options.AddPolicy("EnableAll", policy =>
+var enableAll = "EnableAll";
+builder.Services.AddCors(options => options.AddPolicy(enableAll, policy =>
 {
-    policy.AllowAnyHeader();
     policy.AllowAnyOrigin();
     policy.AllowAnyMethod();
+    policy.AllowAnyHeader();
 }));
 builder.Services.AddIdentity<User, Role>(options =>
     {
@@ -64,7 +65,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("EnableAll");
+app.UseCors(enableAll);
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

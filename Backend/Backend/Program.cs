@@ -1,6 +1,7 @@
 using System.Text;
 using Backend.Auth.Users;
 using Backend.Database;
+using Backend.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,9 @@ builder.Services.AddCors(options => options.AddPolicy(enableAll, policy =>
     policy.AllowAnyMethod();
     policy.AllowAnyHeader();
 }));
+
+builder.Services.AddSwaggerConfiguration();
+
 builder.Services.AddIdentity<User, Role>(options =>
     {
         options.Password.RequireDigit = false;

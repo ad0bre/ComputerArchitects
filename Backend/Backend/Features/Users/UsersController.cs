@@ -24,21 +24,32 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = "manager")]
+    // [Authorize(Roles = "manager")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<UserView>>> Get()
     {
-        return Ok(await _userManager.Users.Select(
-            user => new UserView
+        var list = await _userManager.Users.Select(user => new UserView
+        {
+            Id = user.Id,
+            Email = user.Email
+        }).ToListAsync();
+
+        foreach (var userView in list)
+        {
+            var user = await _userManager.FindByIdAsync(userView.Id);
+            if (user is null)
             {
-                Id = user.Id,
-                Email = user.Email,
-                RoleId = GetRoleId(user).Result
-            }).ToListAsync());
+                return NotFound("Error in getting users");
+            }
+
+            userView.RoleId = (await _roleManager.FindByNameAsync((await _userManager.GetRolesAsync(user)).First())).Id;
+        }
+
+        return Ok(list);
     }
 
     [HttpGet("{role}")]
-    [Authorize(Roles = "manager")]
+    // [Authorize(Roles = "manager")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<UserView>>> GetAllbyRole([FromRoute]string role)
@@ -53,10 +64,10 @@ public class UsersController : ControllerBase
     }
     
     [HttpGet("id/{id}")]
-    [Authorize(Roles = "manager")]
+    // [Authorize(Roles = "manager")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<UserView>> GetbyId([FromRoute]string id)
+    public async Task<ActionResult<UserView>> Get([FromRoute]string id)
     {
         return (await _userManager.FindByIdAsync(id)) is null ? Ok(await _userManager.FindByIdAsync(id)) : NotFound();
     }
@@ -193,12 +204,10 @@ public class UsersController : ControllerBase
             RoleId = await GetRoleId(user)
         });
     }
-
+    
     private async Task<string> GetRoleId(User user)
     {
         var roleName = (await _userManager.GetRolesAsync(user)).First();
-        return (await _roleManager.FindByNameAsync(roleName)) is null
-            ? (await _roleManager.FindByNameAsync(roleName)).Id
-            : null;
+        return (await _roleManager.FindByIdAsync(roleName)).Id;
     }
 }

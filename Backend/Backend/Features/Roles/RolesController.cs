@@ -80,7 +80,11 @@ public class RolesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<RoleView>> Post([FromBody] RoleView request)
     {
-        var role = new Role { Name = request.Name };
+        var role = new Role
+        {
+            Id = Guid.NewGuid().ToString(),
+            Name = request.Name
+        };
         var result = await _roles.CreateAsync(role);
         if (!result.Succeeded)
         {

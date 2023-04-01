@@ -10,8 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
 // Add services to the container.
-builder.Services.AddDbContext<AppDbContext>(opttions => opttions.UseNpgsql(connectionString));
-builder.Services.AddCors(options => options.AddPolicy("EnableALl", policy =>
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddCors(options => options.AddPolicy("EnableAll", policy =>
 {
     policy.AllowAnyHeader();
     policy.AllowAnyOrigin();

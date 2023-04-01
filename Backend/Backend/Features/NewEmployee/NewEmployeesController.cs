@@ -152,6 +152,7 @@ public class NewEmployeesController : ControllerBase
         newEmployee.Bio = request.Bio != string.Empty ? request.Bio : newEmployee.Bio;
         newEmployee.Position = request.Position != string.Empty ? request.Position : newEmployee.Position;
         newEmployee.StartedWorking = request.StartedWorking != null ? request.StartedWorking : newEmployee.StartedWorking;
+        newEmployee.Updated = DateTime.UtcNow;
 
         var result = _dbContext.NewEmployees.Update(newEmployee);
         await _dbContext.SaveChangesAsync();
@@ -183,6 +184,7 @@ public class NewEmployeesController : ControllerBase
         newEmployee.Name = request.Name != string.Empty ? request.Name : newEmployee.Name;
         newEmployee.Email = request.Email != string.Empty ? request.Email : newEmployee.Email;
         newEmployee.Bio = request.Bio != string.Empty ? request.Bio : newEmployee.Bio;
+        newEmployee.Updated = DateTime.UtcNow;
 
         var result = _dbContext.NewEmployees.Update(newEmployee);
         await _dbContext.SaveChangesAsync();

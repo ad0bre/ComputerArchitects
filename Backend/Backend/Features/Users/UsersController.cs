@@ -10,7 +10,6 @@ namespace Backend.Features.Users;
 
 [ApiController]
 [Route("api/users")]
-// [Authorize(Roles = "manager")]
 [Consumes(MediaTypeNames.Application.Json)]
 [Produces(MediaTypeNames.Application.Json)]
 public class UsersController : ControllerBase
@@ -25,6 +24,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "manager")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<UserView>>> Get()
     {
@@ -38,6 +38,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{role}")]
+    [Authorize(Roles = "manager")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<UserView>>> GetAllbyRole([FromRoute]string role)
@@ -52,6 +53,7 @@ public class UsersController : ControllerBase
     }
     
     [HttpGet("id/{id}")]
+    [Authorize(Roles = "manager")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UserView>> GetbyId([FromRoute]string id)
@@ -60,6 +62,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "manager")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UserView>> Post([FromBody]UserRequest request)
@@ -95,6 +98,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "manager")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UserView>> Delete([FromRoute] string id)
@@ -123,10 +127,11 @@ public class UsersController : ControllerBase
     }
 
     [HttpPatch("role/{id}")]
+    [Authorize(Roles = "manager")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<UserView>> ChangeRole([FromRoute] string id, [FromBody]string roleId)
+    public async Task<ActionResult<UserView>> ChangeRole([FromRoute] string id, [Microsoft.AspNetCore.Mvc.FromBody]string roleId)
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user is null)
@@ -146,6 +151,41 @@ public class UsersController : ControllerBase
         await _userManager.AddToRoleAsync(user, newRole.Name);
         var result = await _userManager.UpdateAsync(user);
 
+        return Ok(new UserView
+        {
+            Id = user.Id,
+            Email = user.Email,
+            RoleId = await GetRoleId(user)
+        });
+    }
+    
+    [HttpPatch("changepassword/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<UserView>> ChangePassword([FromRoute] string id, [FromBody] string oldPassword, [FromBody]string newPassword)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        if (user is null)
+        {
+            return NotFound("User not found");
+        }
+
+        var wrongPassword = !await _userManager.CheckPasswordAsync(user, oldPassword);
+        if (wrongPassword)
+        {
+            return Unauthorized("Wrong password inputed");
+        }
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+        if (!result.Succeeded)
+        {
+            return BadRequest(result.Errors);
+        }
+
+        user.HasChangedPassword = true;
         return Ok(new UserView
         {
             Id = user.Id,

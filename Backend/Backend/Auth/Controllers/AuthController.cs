@@ -45,8 +45,8 @@ public class AuthController : ControllerBase
         {
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-            new(ClaimTypes.NameIdentifier, user.Id),
-            new(ClaimTypes.Email, user.Email)
+            new("id", user.Id),
+            new("email", user.Email)
         };
         
         authClaims.AddRange(userRoles.Select(role => new Claim("role", role)));
@@ -67,7 +67,7 @@ public class AuthController : ControllerBase
             Expiration = token.ValidTo
         });
     }
-    
+
     // [HttpPost]
     // [ProducesResponseType(StatusCodes.Status201Created)]
     // [ProducesResponseType(StatusCodes.Status400BadRequest)]

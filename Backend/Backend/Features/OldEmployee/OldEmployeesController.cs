@@ -155,6 +155,7 @@ public class OldEmployeesController : ControllerBase
         oldEmployee.Bio = request.Bio != string.Empty ? request.Bio : oldEmployee.Bio;
         oldEmployee.Position = request.Position != string.Empty ? request.Position : oldEmployee.Position;
         oldEmployee.StartedWorking = request.StartedWorking != null ? request.StartedWorking : oldEmployee.StartedWorking;
+        oldEmployee.Updated = DateTime.UtcNow;
 
         var result = _employees.Update(oldEmployee);
         await SaveChanges();
@@ -186,6 +187,7 @@ public class OldEmployeesController : ControllerBase
         oldEmployee.Name = request.Name != string.Empty ? request.Name : oldEmployee.Name;
         oldEmployee.Email = request.Email != string.Empty ? request.Email : oldEmployee.Email;
         oldEmployee.Bio = request.Bio != string.Empty ? request.Bio : oldEmployee.Bio;
+        oldEmployee.Updated = DateTime.UtcNow;
 
         var result = _employees.Update(oldEmployee);
         await SaveChanges();

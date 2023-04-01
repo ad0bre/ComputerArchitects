@@ -1,7 +1,7 @@
 using System.Net.Mime;
-using System.Web.Http;
 using Backend.Auth.Users;
 using Backend.Features.Roles.Views;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Backend.Features.Roles;
 
 [ApiController]
-[Microsoft.AspNetCore.Mvc.Route("api/roles")]
+[Route("api/roles")]
 [Consumes(MediaTypeNames.Application.Json)]
 [Produces(MediaTypeNames.Application.Json)]
 public class RolesController : ControllerBase
@@ -21,7 +21,7 @@ public class RolesController : ControllerBase
         _roles = roles;
     }
 
-    [Microsoft.AspNetCore.Mvc.HttpGet]
+    [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<RoleView>>> Get()
     {
@@ -34,7 +34,7 @@ public class RolesController : ControllerBase
             ).ToListAsync());
     }
 
-    [Microsoft.AspNetCore.Mvc.HttpGet("{id}")]
+    [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<RoleView>> Get([FromRoute] string id)
@@ -52,7 +52,7 @@ public class RolesController : ControllerBase
         });
     }
 
-    [Microsoft.AspNetCore.Mvc.HttpDelete("{id}")]
+    [HttpDelete("{id}")]
     [Authorize(Roles = "manager")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -72,5 +72,26 @@ public class RolesController : ControllerBase
         }
 
         return Ok(role);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "manager")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<RoleView>> Post([FromBody] RoleView request)
+    {
+        var role = new Role { Name = request.Name };
+        var result = await _roles.CreateAsync(role);
+        if (!result.Succeeded)
+        {
+            return BadRequest(result.Errors);
+        }
+
+        return Created($"roles/{role.Id}", new RoleView
+        {
+            Id = role.Id,
+            Name = role.Name
+        });
+
     }
 }

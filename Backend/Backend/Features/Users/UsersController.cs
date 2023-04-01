@@ -164,7 +164,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<UserView>> ChangePassword([FromRoute] string id, [FromBody] string oldPassword, [FromBody]string newPassword)
+    public async Task<ActionResult<UserView>> ChangePassword([FromRoute] string id, string oldPassword, string newPassword)
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user is null)

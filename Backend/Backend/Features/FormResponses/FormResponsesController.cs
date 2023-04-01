@@ -57,4 +57,46 @@ public class FormResponsesController : ControllerBase
         ).ToListAsync());
     }
 
+    [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<FormResponseView>> Get([FromRoute] string id)
+    {
+        var response = await _dbContext.Responses.FirstOrDefaultAsync(e => e.Id == id);
+        if (response is null)
+        {
+            return NotFound("Response not found");
+        }
+
+        return Ok(new FormResponseView
+        {
+            Id = response.Id,
+            QuestionId = response.QuestionId,
+            UserId = response.UserId,
+            Value = response.Value
+        });
+    }
+
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<FormResponseView>> Delete([FromRoute] string id)
+    {
+        var response = await _dbContext.Responses.FirstOrDefaultAsync(e => e.Id == id);
+        if (response is null)
+        {
+            return NotFound("Response not found");
+        }
+
+        var result = _dbContext.Responses.Remove(response);
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(new FormResponseView
+        {
+            Id = result.Entity.Id,
+            QuestionId = result.Entity.QuestionId,
+            UserId = result.Entity.UserId,
+            Value = result.Entity.Value
+        });
+    }
 }

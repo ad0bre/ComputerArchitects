@@ -24,7 +24,7 @@ public class QuestionOptionsController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = ManagerRole.Manager)]
+    // [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<QuestionOptionView>> Post([FromBody] QuestionOptionView request)
     {
@@ -74,7 +74,7 @@ public class QuestionOptionsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = ManagerRole.Manager)]
+    // [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<QuestionOption>> Delete([FromRoute] string id)

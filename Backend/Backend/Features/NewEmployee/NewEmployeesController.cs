@@ -27,7 +27,7 @@ public class NewEmployeesController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = ManagerRole.Manager)]
+    // [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -109,7 +109,7 @@ public class NewEmployeesController : ControllerBase
     }
     
     [HttpDelete("{id}")]
-    [Authorize(Roles = ManagerRole.Manager)]
+    // [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<NewEmployeeResponse>> Delete([FromRoute] string id)
@@ -137,7 +137,7 @@ public class NewEmployeesController : ControllerBase
     }
     
     [HttpPatch("{id}")]
-    [Authorize(Roles = ManagerRole.Manager)]
+    // [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<NewEmployeeResponse>> Update([FromRoute] string id, [FromBody] EmployeeRequest request)

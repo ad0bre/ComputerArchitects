@@ -54,7 +54,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = ManagerRole.Manager)]
+    // [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -76,7 +76,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = ManagerRole.Manager)]
+    // [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<RoleView>> Post([FromBody] RoleView request)

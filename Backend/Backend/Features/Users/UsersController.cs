@@ -62,7 +62,7 @@ public class UsersController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<UserView>> Post(UserRequest request)
+    public async Task<ActionResult<UserView>> Post([FromBody]UserRequest request)
     {
         var newUser = new User { Email = request.Email };
 

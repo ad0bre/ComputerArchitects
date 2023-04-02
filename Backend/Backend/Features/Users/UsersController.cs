@@ -221,6 +221,8 @@ public class UsersController : ControllerBase
         }
 
         user.HasChangedPassword = true;
+        await _userManager.UpdateAsync(user);
+        
         return Ok(new UserView
         {
             Id = user.Id,

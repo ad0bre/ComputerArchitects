@@ -46,7 +46,8 @@ public class AuthController : ControllerBase
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
             new("id", user.Id),
-            new("email", user.Email)
+            new("email", user.Email),
+            new("changedpassword", user.HasChangedPassword.ToString())
         };
         
         authClaims.AddRange(userRoles.Select(role => new Claim("roles", role)));

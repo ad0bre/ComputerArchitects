@@ -71,7 +71,13 @@ public class NewEmployeesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<NewEmployeeResponse>>> GetbyBuddyId([FromRoute] string id)
     {
-        var buddy = await _dbContext.OldEmployees.FirstOrDefaultAsync(e => e.Id == id);
+        var user = await _users.FindByIdAsync(id);
+        if (user is null)
+        {
+            return NotFound("User not found");
+        }
+        
+        var buddy = await _dbContext.OldEmployees.FirstOrDefaultAsync(e => e.UserId == user.Id);
         if (buddy is null)
         {
             return NotFound("Buddy not found");
@@ -310,7 +316,7 @@ public class NewEmployeesController : ControllerBase
             bestMatch = oldEmployee;
         }
 
-        if (bestMatch is null)
+        if (bestMatch is null || !bestMatch.IsAccepting)
         {
             return NotFound("Could not find a workplace buddy");
         }

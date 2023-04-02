@@ -32,7 +32,8 @@ public class UsersController : ControllerBase
         var list = await _userManager.Users.Select(user => new UserView
         {
             Id = user.Id,
-            Email = user.Email
+            Email = user.Email,
+            HasChangedPassword = user.HasChangedPassword
         }).ToListAsync();
 
         foreach (var userView in list)
@@ -43,7 +44,14 @@ public class UsersController : ControllerBase
                 return NotFound("Error in getting users");
             }
 
-            userView.RoleId = (await _roleManager.FindByNameAsync((await _userManager.GetRolesAsync(user)).First())).Id;
+            var roleName = (await _userManager.GetRolesAsync(user)).First();
+            var role = await _roleManager.FindByNameAsync(roleName);
+            if (role is null)
+            {
+                return NotFound("Role not found");
+            }
+
+            userView.RoleId = role.Id;
         }
 
         return Ok(list);
@@ -80,7 +88,8 @@ public class UsersController : ControllerBase
         {
             Id = user.Id,
             Email = user.Email,
-            RoleId = await GetRoleId(user)
+            RoleId = await GetRoleId(user),
+            HasChangedPassword = user.HasChangedPassword
         });
     }
 
@@ -116,6 +125,7 @@ public class UsersController : ControllerBase
         {
             Id = user.Id,
             Email = user.Email,
+            HasChangedPassword = user.HasChangedPassword,
             RoleId = role.Id
         });
     }
@@ -145,6 +155,7 @@ public class UsersController : ControllerBase
         {
             Id = user.Id,
             Email = user.Email,
+            HasChangedPassword = user.HasChangedPassword,
             RoleId = await GetRoleId(user)
         });
     }
@@ -178,6 +189,7 @@ public class UsersController : ControllerBase
         {
             Id = user.Id,
             Email = user.Email,
+            HasChangedPassword = user.HasChangedPassword,
             RoleId = await GetRoleId(user)
         });
     }
@@ -213,6 +225,7 @@ public class UsersController : ControllerBase
         {
             Id = user.Id,
             Email = user.Email,
+            HasChangedPassword = user.HasChangedPassword,
             RoleId = await GetRoleId(user)
         });
     }

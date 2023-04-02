@@ -9,4 +9,6 @@ public class UserView
     [EmailAddress] public string Email { get; set; } = string.Empty;
 
     public string RoleId { get; set; } = string.Empty;
+    
+    public bool HasChangedPassword { get; set; }
 }

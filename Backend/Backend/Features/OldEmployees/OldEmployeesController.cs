@@ -148,13 +148,19 @@ public class OldEmployeesController : ControllerBase
         {
             return NotFound("Employee not found");
         }
+        
+        var user = await _userManager.FindByIdAsync(request.UserId);
+        if (user is null)
+        {
+            return NotFound("User not found");
+        } 
 
         oldEmployee.UserId = request.UserId != string.Empty ? request.UserId : oldEmployee.UserId;
         oldEmployee.Name = request.Name != string.Empty ? request.Name : oldEmployee.Name;
-        oldEmployee.Email = request.Email != string.Empty ? request.Email : oldEmployee.Email;
         oldEmployee.Bio = request.Bio != string.Empty ? request.Bio : oldEmployee.Bio;
         oldEmployee.Position = request.Position != string.Empty ? request.Position : oldEmployee.Position;
         oldEmployee.StartedWorking = request.StartedWorking != null ? request.StartedWorking : oldEmployee.StartedWorking;
+        oldEmployee.Email = user.Email;
         oldEmployee.Updated = DateTime.UtcNow;
 
         var result = _employees.Update(oldEmployee);
@@ -183,10 +189,16 @@ public class OldEmployeesController : ControllerBase
         {
             return NotFound("Employee not found");
         }
+        
+        var user = await _userManager.FindByIdAsync(oldEmployee.UserId);
+        if (user is null)
+        {
+            return NotFound("User not found");
+        } 
 
         oldEmployee.Name = request.Name != string.Empty ? request.Name : oldEmployee.Name;
-        oldEmployee.Email = request.Email != string.Empty ? request.Email : oldEmployee.Email;
         oldEmployee.Bio = request.Bio != string.Empty ? request.Bio : oldEmployee.Bio;
+        oldEmployee.Email = user.Email;
         oldEmployee.Updated = DateTime.UtcNow;
 
         var result = _employees.Update(oldEmployee);

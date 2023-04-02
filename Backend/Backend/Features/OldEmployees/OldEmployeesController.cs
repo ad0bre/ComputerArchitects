@@ -109,6 +109,35 @@ public class OldEmployeesController : ControllerBase
         });
     }
 
+    [HttpGet("userid/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<OldEmployeeResponse>> GetbyUserId([FromRoute] string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        if (user is null)
+        {
+            return NotFound("User not found");
+        }
+
+        var oldEmployee = await _dbContext.OldEmployees.FirstOrDefaultAsync(e => e.UserId == user.Id);
+        if (oldEmployee is null)
+        {
+            return NotFound("Employee not found");
+        }
+
+        return Ok(new OldEmployeeResponse
+        {
+            Id = oldEmployee.Id,
+            UserId = oldEmployee.UserId,
+            Name = oldEmployee.Name,
+            Bio = oldEmployee.Bio,
+            Email = oldEmployee.Email,
+            Position = oldEmployee.Position,
+            StartedWorking = oldEmployee.StartedWorking,
+            IsAccepting = oldEmployee.IsAccepting
+        });
+    }
+
     [HttpDelete("{id}")]
     // [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status200OK)]

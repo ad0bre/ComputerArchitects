@@ -134,6 +134,35 @@ public class NewEmployeesController : ControllerBase
         });
     }
     
+    [HttpGet("userid/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<NewEmployeeResponse>> GetbyUserId([FromRoute] string id)
+    {
+        var user = await _users.FindByIdAsync(id);
+        if (user is null)
+        {
+            return NotFound("User not found");
+        }
+
+        var newEmployee = await _dbContext.NewEmployees.FirstOrDefaultAsync(e => e.UserId == user.Id);
+        if (newEmployee is null)
+        {
+            return NotFound("Employee not found");
+        }
+
+        return Ok(new NewEmployeeResponse
+        {
+            Id = newEmployee.Id,
+            UserId = newEmployee.UserId,
+            Name = newEmployee.Name,
+            Bio = newEmployee.Bio,
+            Email = newEmployee.Email,
+            Position = newEmployee.Position,
+            StartedWorking = newEmployee.StartedWorking,
+            BuddyId = newEmployee.BuddyId
+        });
+    }
+    
     [HttpDelete("{id}")]
     // [Authorize(Roles = ManagerRole.Manager)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -268,18 +297,17 @@ public class NewEmployeesController : ControllerBase
         
         foreach (var oldEmployee in oldEmployees)
         {
+            if(!oldEmployee.IsAccepting) continue;
             var oldEmployeeTechnologies = await responses
                 .Where(r => r.UserId == oldEmployee.UserId)
                 .Select(r => r.Value)
                 .ToListAsync();
             
             var commonCount = newEmployeeTechnologies.Intersect(oldEmployeeTechnologies).Count();
-            
-            if (commonCount > maxCommon)
-            {
-                maxCommon = commonCount;
-                bestMatch = oldEmployee;
-            }
+
+            if (commonCount <= maxCommon) continue;
+            maxCommon = commonCount;
+            bestMatch = oldEmployee;
         }
 
         if (bestMatch is null)

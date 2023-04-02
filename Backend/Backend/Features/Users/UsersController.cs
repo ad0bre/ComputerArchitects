@@ -70,7 +70,18 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UserView>> Get([FromRoute]string id)
     {
-        return (await _userManager.FindByIdAsync(id)) is null ? Ok(await _userManager.FindByIdAsync(id)) : NotFound();
+        var user = await _userManager.FindByIdAsync(id);
+        if (user is null)
+        {
+            return NotFound("User not found");
+        }
+
+        return Ok(new UserView
+        {
+            Id = user.Id,
+            Email = user.Email,
+            RoleId = await GetRoleId(user)
+        });
     }
 
     [HttpPost]
@@ -209,6 +220,12 @@ public class UsersController : ControllerBase
     private async Task<string> GetRoleId(User user)
     {
         var roleName = (await _userManager.GetRolesAsync(user)).First();
-        return (await _roleManager.FindByIdAsync(roleName)).Id;
+        var role = await _roleManager.FindByNameAsync(roleName);
+        if (role is null)
+        {
+            return string.Empty;
+        }
+
+        return role.Id;
     }
 }

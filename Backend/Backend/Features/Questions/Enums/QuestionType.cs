@@ -4,6 +4,5 @@ public enum QuestionType
 {
     Text,
     Dropdown,
-    Checkbox,
     Radio
 }

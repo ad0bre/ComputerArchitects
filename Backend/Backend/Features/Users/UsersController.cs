@@ -79,7 +79,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UserView>> Post([FromBody]UserRequest request)
     {
-        var newUser = new User {UserName = "user", Email = request.Email };
+        var newUser = new User {UserName = request.Email.Split('@', StringSplitOptions.RemoveEmptyEntries).First(), Email = request.Email };
 
         var result = await _userManager.CreateAsync(newUser, request.Password);
         if (!result.Succeeded)

@@ -65,7 +65,33 @@ public class NewEmployeesController : ControllerBase
             BuddyId = result.Entity.BuddyId
         });
     }
-    
+
+    [HttpGet("buddyid/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IEnumerable<NewEmployeeResponse>>> GetbyBuddyId([FromRoute] string id)
+    {
+        var buddy = await _dbContext.OldEmployees.FirstOrDefaultAsync(e => e.Id == id);
+        if (buddy is null)
+        {
+            return NotFound("Buddy not found");
+        }
+
+        return Ok(await _dbContext.NewEmployees
+            .Where(n => n.BuddyId == buddy.Id)
+            .Select(newEmployee => new NewEmployeeResponse
+            {
+                Id = newEmployee.Id,
+                UserId = newEmployee.UserId,
+                Name = newEmployee.Name,
+                Bio = newEmployee.Bio,
+                Email = newEmployee.Email,
+                Position = newEmployee.Position,
+                StartedWorking = newEmployee.StartedWorking,
+                BuddyId = newEmployee.BuddyId
+            }).ToListAsync());
+    }
+
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<NewEmployeeResponse>>> Get()
@@ -269,5 +295,39 @@ public class NewEmployeesController : ControllerBase
         }
         await _dbContext.SaveChangesAsync();
         return Ok(newEmployee.BuddyId);
+    }
+
+    [HttpPatch("changebuddy/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<NewEmployeeResponse>> ChangeBuddy([FromRoute] string id, [FromBody] string buddyId)
+    {
+        var newEmployee = await _dbContext.NewEmployees.FirstOrDefaultAsync(e => e.Id == id);
+        if (newEmployee is null)
+        {
+            return NotFound("New employee not found");
+        }
+
+        var buddy = await _dbContext.OldEmployees.FirstOrDefaultAsync(e => e.Id == id);
+        if (buddy is null)
+        {
+            return NotFound("Buddy not found");
+        }
+
+        newEmployee.BuddyId = buddy.Id;
+        var result = _dbContext.NewEmployees.Update(newEmployee);
+        await _dbContext.SaveChangesAsync();
+        
+        return Ok(new NewEmployeeResponse
+        {
+            Id = result.Entity.Id,
+            UserId = result.Entity.UserId,
+            Name = result.Entity.Name,
+            Bio = result.Entity.Bio,
+            Email = result.Entity.Email,
+            Position = result.Entity.Position,
+            StartedWorking = result.Entity.StartedWorking,
+            BuddyId = result.Entity.BuddyId
+        });
     }
 }

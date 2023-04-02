@@ -1,5 +1,6 @@
 using System.Net.Mime;
 using Backend.Database;
+using Backend.Features.Questions.Enums;
 using Backend.Features.Questions.Views;
 using Backend.Utils.AdminRoute;
 using Microsoft.AspNetCore.Authorization;
@@ -63,6 +64,25 @@ public class QuestionsController : ControllerBase
                 Type = question.Type,
                 Form = question.Form
             }).ToListAsync());
+    }
+
+    [HttpGet("formtype/{formtype}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<QuestionResponse>>> GetByForm([FromRoute] FormType formType)
+    {
+        return Ok(await _dbContext.Questions
+            .Where(q => q.Form == formType)
+            .Select(
+                question => new QuestionResponse
+                {
+                    Id = question.Id,
+                    Title = question.Title,
+                    IsRequired = question.IsRequired,
+                    Form = question.Form,
+                    Type = question.Type,
+                    Placeholder = question.Placeholder
+                }
+            ).ToListAsync());
     }
 
     [HttpGet("{id}")]
